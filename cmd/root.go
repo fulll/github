@@ -12,6 +12,12 @@ import (
 	"golang.org/x/oauth2"
 )
 
+var (
+	version    = "devel"
+	buildDate  string
+	commitHash string
+)
+
 // Github owner (user or organization)
 var owner string
 
@@ -33,7 +39,7 @@ var rootCmd = &cobra.Command{
 	Long:  ``,
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		token := os.Getenv("GITHUB_TOKEN")
-		if cmd.Name() != "help" && cmd.Name() != "deployment" && cmd.Name() != "deployment_status" && token == "" {
+		if cmd.Name() != "version" && cmd.Name() != "help" && cmd.Name() != "deployment" && cmd.Name() != "deployment_status" && token == "" {
 			log.Fatal("Please define GITHUB_TOKEN. See documentation to obtain one if needed: https://help.github.com/en/articles/creating-a-personal-access-token-for-the-command-line")
 		}
 		ctx = context.Background()
@@ -45,7 +51,7 @@ var rootCmd = &cobra.Command{
 			githubRepository = os.Getenv("GITHUB_REPOSITORY")
 		}
 		owner, repository = splitGithubRepository(githubRepository)
-		if cmd.Name() != "help" && cmd.Name() != "deployment" && cmd.Name() != "deployment_status" && owner == "" && repository == "" {
+		if cmd.Name() != "version" && cmd.Name() != "help" && cmd.Name() != "deployment" && cmd.Name() != "deployment_status" && owner == "" && repository == "" {
 			log.Fatal("Github repository is required.")
 		}
 	},
@@ -72,8 +78,17 @@ func splitGithubRepository(repository string) (string, string) {
 	return values[0], values[1]
 }
 
+var versionCmd = &cobra.Command{
+	Use:   "version",
+	Short: "Print the version number of github",
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Printf("github version %s\nbuild date %s\ncommit %s\n", version, buildDate, commitHash)
+	},
+}
+
 func init() {
+	rootCmd.AddCommand(versionCmd)
+	rootCmd.Version = version
 	rootCmd.PersistentFlags().StringVarP(&githubRepository, "repository", "r", "", "the owner and repository name. For example, octocat/Hello-World. Environment variable GITHUB_REPOSITORY will be used as a fallback.")
 
-	rootCmd.Version = "1.0.0"
 }
