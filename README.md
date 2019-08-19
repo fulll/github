@@ -22,7 +22,7 @@ The goal is to have a convenient, lightweight tool to use inside github [actions
 Some use cases that motivated the creation of this tool were:
 
 ```shell
-# Create a production deployment and corresponding status
+# Create a production deployment and corresponding status, long syntax
 DEPLOYMENT_ID=$(
   github deployment create \
   --environment production \
@@ -30,4 +30,6 @@ DEPLOYMENT_ID=$(
   $GITHUB_REF
 )
 github deployment_status create $DEPLOYMENT_ID in_progress
+# Create a production deployment and corresponding status, short syntax
+github ds c $(github d c -e production -t deploy:migration) in_progress
 ```
