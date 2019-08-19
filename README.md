@@ -8,11 +8,10 @@ You can manipulate following Github resources:
 
 - deployment
 - deployment_status
-- release
 
 ## What it will (probably) never do
 
-Managing resources like pull requests, issues or repositories life cycle and settings.
+Managing resources like pull requests, issues or repositories life cycle and settings for example.
 
 Some very good tools like [hub](https://github.com/github/hub) or [terraform's github provider](https://www.terraform.io/docs/providers/github/index.html) are already great at doing that.
 
@@ -23,10 +22,6 @@ The goal is to have a convenient, lightweight tool to use inside github [actions
 Some use cases that motivated the creation of this tool were:
 
 ```shell
-# Append some deploy button inside a release note
-printf "%s\nDEPLOY_BUTTON_CODE" $(github release get ID | jq .body) | \
-github release edit ID --body -
-
 # Create a production deployment and corresponding status
 DEPLOYMENT_ID=$(
   github deployment create \
