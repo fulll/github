@@ -33,7 +33,7 @@ var rootCmd = &cobra.Command{
 	Long:  ``,
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		token := os.Getenv("GITHUB_TOKEN")
-		if cmd.Name() != "help" && cmd.Name() != "deployment" && cmd.Name() != "deployment_status" && cmd.Name() != "release" && token == "" {
+		if cmd.Name() != "help" && cmd.Name() != "deployment" && cmd.Name() != "deployment_status" && token == "" {
 			log.Fatal("Please define GITHUB_TOKEN. See documentation to obtain one if needed: https://help.github.com/en/articles/creating-a-personal-access-token-for-the-command-line")
 		}
 		ctx = context.Background()
@@ -45,7 +45,7 @@ var rootCmd = &cobra.Command{
 			githubRepository = os.Getenv("GITHUB_REPOSITORY")
 		}
 		owner, repository = splitGithubRepository(githubRepository)
-		if cmd.Name() != "help" && cmd.Name() != "deployment" && cmd.Name() != "deployment_status" && cmd.Name() != "release" && owner == "" && repository == "" {
+		if cmd.Name() != "help" && cmd.Name() != "deployment" && cmd.Name() != "deployment_status" && owner == "" && repository == "" {
 			log.Fatal("Github repository is required.")
 		}
 	},
@@ -75,5 +75,5 @@ func splitGithubRepository(repository string) (string, string) {
 func init() {
 	rootCmd.PersistentFlags().StringVarP(&githubRepository, "repository", "r", "", "the owner and repository name. For example, octocat/Hello-World. Environment variable GITHUB_REPOSITORY will be used as a fallback.")
 
-	rootCmd.Version = "0.1.0"
+	rootCmd.Version = "1.0.0"
 }
