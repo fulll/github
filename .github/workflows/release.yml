@@ -74,8 +74,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         # https://help.github.com/en/articles/virtual-environments-for-github-actions#token-permissions
-        echo "GITHUB_ACTOR: ${GITHUB_ACTOR}"
-        GITHUB_USER=${GITHUB_ACTOR}; hub release edit \
+        export GITHUB_USER=${GITHUB_ACTOR}
+        hub release edit \
           "${TAG_NAME}" \
           -m "" \
           -a ./release/github-darwin-amd64 \
