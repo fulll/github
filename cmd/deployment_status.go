@@ -57,7 +57,7 @@ var deploymentStatusListCmd = &cobra.Command{
 }
 
 var deploymentStatusGetCmd = &cobra.Command{
-	Use:     "create DEPLOYMENT_ID DEPLOYMENT_STATUS_ID",
+	Use:     "get DEPLOYMENT_ID DEPLOYMENT_STATUS_ID",
 	Short:   "Get a single deployment status",
 	Aliases: []string{"g"},
 	Args:    cobra.ExactArgs(2),
