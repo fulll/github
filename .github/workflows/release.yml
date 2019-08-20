@@ -31,6 +31,7 @@ jobs:
         GO_BUILD_OPTIONS: "-a -installsuffix cgo"
         GO_BUILD_LDFLAGS: "-s -w"
         GOARCH: amd64
+        CGO_ENABLED: 0
         TAG_NAME: ${{ github.event.release.tag_name }}
       run: |
         export BUILD_DATE=$(date "+%Y-%m-%d")
@@ -41,21 +42,22 @@ jobs:
           -X github.com/inextensodigital/github/cmd.commitHash=${BUILD_COMMIT_HASH}
         "
 
-        export GOOS=darwin
+        export GOOS=linux
         export NAME=github-${GOOS}-${GOARCH}
-        printf "Building ${NAME}..."
+        printf "Building ${NAME}...\n"
         go build ${GO_BUILD_OPTIONS} -ldflags "${GO_BUILD_LDFLAGS}" -o release/${NAME}
         shasum -a 256 release/${NAME} > "release/${NAME}.sha256"
 
         export GOOS=windows
         export NAME=github-${GOOS}-${GOARCH}.exe
-        printf "Building ${NAME}..."
+        printf "Building ${NAME}...\n"
         go build ${GO_BUILD_OPTIONS} -ldflags "${GO_BUILD_LDFLAGS}" -o release/${NAME}
         shasum -a 256 release/${NAME} > "release/${NAME}.sha256"
 
         export GOOS=darwin
         export NAME=github-${GOOS}-${GOARCH}
-        printf "Building ${NAME}..."
+        export CGO_ENABLED=1
+        printf "Building ${NAME}...\n"
         go build ${GO_BUILD_OPTIONS} -ldflags "${GO_BUILD_LDFLAGS}" -o release/${NAME}
         shasum -a 256 release/${NAME} > "release/${NAME}.sha256"
 
