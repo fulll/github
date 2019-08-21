@@ -112,7 +112,7 @@ var deploymentCreateCmd = &cobra.Command{
 		if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Printf("Successfully created deployment: %v\n", deployment.GetID())
+		fmt.Printf("%v\n", deployment.GetID())
 	},
 }
 
