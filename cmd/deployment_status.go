@@ -88,6 +88,7 @@ var deploymentStatusGetCmd = &cobra.Command{
 func isValidState(state string) error {
 	switch state {
 	case
+		"success",
 		"error",
 		"failure",
 		"inactive",
@@ -97,7 +98,7 @@ func isValidState(state string) error {
 		return nil
 	}
 
-	return errors.New("invalid state: should be one of error, failure, inactive, in_progress, queued or pending")
+	return errors.New("invalid state: should be one of success, error, failure, inactive, in_progress, queued or pending")
 }
 
 var deploymentStatusCreateCmd = &cobra.Command{
