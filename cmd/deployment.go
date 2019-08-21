@@ -89,6 +89,11 @@ var deploymentCreateCmd = &cobra.Command{
 		var deploymentRequest github.DeploymentRequest
 		err := viper.Unmarshal(&deploymentRequest)
 		deploymentRequest.Ref = &args[0]
+		if len(*deploymentRequest.RequiredContexts) == 0 {
+			requiredContexts := make([]string, 0)
+			deploymentRequest.RequiredContexts = &requiredContexts
+		}
+
 		if err != nil {
 			log.Fatal(err)
 		}
