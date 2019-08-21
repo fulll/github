@@ -3,6 +3,7 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 	"strconv"
@@ -89,8 +90,22 @@ var deploymentCreateCmd = &cobra.Command{
 		var deploymentRequest github.DeploymentRequest
 		err := viper.Unmarshal(&deploymentRequest)
 		deploymentRequest.Ref = &args[0]
+		if len(*deploymentRequest.RequiredContexts) == 0 {
+			requiredContexts := make([]string, 0)
+			deploymentRequest.RequiredContexts = &requiredContexts
+		}
+
 		if err != nil {
 			log.Fatal(err)
+		}
+
+		if *deploymentRequest.Payload == "-" {
+			data, err := ioutil.ReadAll(os.Stdin)
+			if err != nil {
+				log.Fatal(err)
+			}
+			p := string(data)
+			deploymentRequest.Payload = &p
 		}
 
 		deployment, _, err := client.Repositories.CreateDeployment(ctx, owner, repository, &deploymentRequest)
