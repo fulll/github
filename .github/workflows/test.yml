@@ -2,6 +2,7 @@ on:
   push:
     branches:
     - '!master'
+    - 'refs/head/*'
 
 name: ci
 jobs:
