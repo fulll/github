@@ -6,33 +6,17 @@ This command line client is based on Github API V3.
 
 You can manipulate following Github resources:
 
-- deployment
-- deployment_status
+- [deployments](https://developer.github.com/v3/repos/deployments/)
+- [deployment_status](https://developer.github.com/v3/repos/deployments/#list-deployment-statuses)
 
 ## What it will (probably) never do
 
-Managing resources like pull requests, issues or repositories life cycle and settings for example.
+Managing resources like pull requests, issues or repositories life cycle and
+settings for example.
 
-Some very good tools like [hub](https://github.com/github/hub) or [terraform's github provider](https://www.terraform.io/docs/providers/github/index.html) are already great at doing that.
-
-## Why another Github client?
-
-The goal is to have a convenient, lightweight tool to use inside github [actions v2](https://github.com/features/actions) workflows.
-
-Some use cases that motivated the creation of this tool were:
-
-```shell
-# Create a production deployment and corresponding status, long syntax
-DEPLOYMENT_ID=$(
-  github deployment create \
-  --environment production \
-  --task deploy:migration \
-  $GITHUB_REF
-)
-github deployment_status create $DEPLOYMENT_ID in_progress
-# Create a production deployment and corresponding status, short syntax
-github ds c $(github d c -e production -t deploy:migration) in_progress
-```
+Some very good tools like [hub](https://github.com/github/hub) or
+[terraform provider](https://www.terraform.io/docs/providers/github/index.html)
+are already great at doing that.
 
 ## How to install it?
 
@@ -43,8 +27,145 @@ go get github.com/inextensodigital/github
 or... (feel free to replace `linux` by either `windows` or `darwin`)
 
 ```shell
-curl -s https://api.github.com/repos/inextensodigital/github/releases/latest | \
-  jq -r '.assets[] | select(.name | contains("linux-amd64")) | .browser_download_url' | \
-  grep -v sha256 | \
-  wget -qi - -O github && sudo chmod +x github
+curl -s https://api.github.com/repos/inextensodigital/github/releases/latest |
+jq -r '.assets[] | select(.name | test("linux-amd64$")) | .browser_download_url' |
+wget -qi - -O github && chmod +x github
+```
+
+## Why another Github client?
+
+The goal is to have a convenient, lightweight tool to use inside github
+[actions v2](https://github.com/features/actions) workflows.
+
+Some use cases that motivated the creation of this tool were:
+
+### How it can help you in github actions v2?
+
+#### Continuous deployment on staging
+
+```yaml
+name: trigger staging deployment on pull request merged
+on:
+  push:
+    branches: [master, dev]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo build app
+      - run: |
+          sudo wget -q -O /usr/local/bin/github $(
+            curl -s https://api.github.com/repos/inextensodigital/github/releases/latest |
+            jq -r '.assets[] | select(.name | test("linux-amd64$")) | .browser_download_url'
+          )
+          sudo chmod +x /usr/local/bin/github
+      - id: deployment
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          id=$(github deployment create --autoMerge=false --productionEnvironment=false --environment staging $GITHUB_REF)
+          github deployment_status create $id in_progress
+          echo "##[set-output name=deployment_id;]$id"
+      - env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ID: ${{ steps.deployment.outputs.deployment_id }}
+        run: |
+          echo deploy app
+          github deployment_status create $ID success
+      - if: failure()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ID: ${{ steps.deployment.outputs.deployment_id }}
+        run: github deployment_status create $ID failure
+```
+
+#### Continuous delivery on production
+
+```yaml
+name: create production deployment on release published
+on: release
+jobs:
+  is-published:
+    runs-on: ubuntu-latest
+    steps:
+      - if: github.event.action != 'published'
+        run: exit 1
+  build:
+    runs-on: ubuntu-latest
+    needs: is-published
+    steps:
+      - run: echo build app
+  create-deployment:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      # # optional: install hub
+      # - run: |
+      #     curl -s https://api.github.com/repos/github/hub/releases/latest |
+      #     jq -r '.assets[] | select(.name | contains("linux-amd64")) | .browser_download_url' |
+      #     wget -qi - -O - | sudo tar xzpf - -C / --strip-components=1
+      # - uses: actions/checkout@master
+      - run: |
+          sudo wget -q -O /usr/local/bin/github $(
+            curl -s https://api.github.com/repos/inextensodigital/github/releases/latest |
+            jq -r '.assets[] | select(.name | test("linux-amd64$")) | .browser_download_url'
+          )
+          sudo chmod +x /usr/local/bin/github
+      - id: deployment
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          id=$(github deployment create --autoMerge=false $GITHUB_REF)
+          echo "##[set-output name=deployment_id;]$id"
+      # #-----------------------------8<----------------------------------------
+      # # here: some job(s) to add for example a deploy button/process
+      # - uses: some-deploy-button-action
+      #   id: button
+      #   with:
+      #     deployment_id: ${{ steps.deployment.outputs.deployment_id }}
+      # - name: append button to release note
+      #   env:
+      #     DEPLOY_BUTTON: ${{ steps.button.outputs.release-button }}
+      #     TAG_NAME: ${{ github.event.release.tag_name }}
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     GITHUB_USER: ${{ github.actor }}
+      #   run: |
+      #     button=$(printf '\n## Deploy to production :rocket:\n%s\n' "$DEPLOY_BUTTON")
+      #     hub release edit -m "" -m "$(hub release show $TAG_NAME -f %b)" -m "$button" $TAG_NAME
+      # #-----------------------------8<----------------------------------------
+```
+
+Then, some external approbation process put the deployment status to `in_progress`
+and you effectively deploy on production :tada:
+
+```yaml
+name: deploy on production
+on: deployment_status
+jobs:
+  should-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - if: github.event.deployment.original_environment != 'production' || github.event.deployment_status.state != 'in_progress'
+        run: exit 1
+  deploy:
+    needs: should-deploy
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          sudo wget -q -O /usr/local/bin/github $(
+            curl -s https://api.github.com/repos/inextensodigital/github/releases/latest |
+            jq -r '.assets[] | select(.name | test("linux-amd64$")) | .browser_download_url'
+          )
+          sudo chmod +x /usr/local/bin/github
+      - env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ID: ${{ github.event.deployment.id }}
+        run: |
+          echo deploy app
+          github deployment_status create $ID success
+      - if: failure()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ID: ${{ github.event.deployment.id }}
+        run: github deployment_status create $ID failure
 ```
