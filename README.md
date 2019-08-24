@@ -24,7 +24,13 @@ are already great at doing that.
 go get github.com/inextensodigital/github
 ```
 
-or... (feel free to replace `linux` by either `windows` or `darwin`)
+or you can use the install script:
+
+```shell
+curl -qs https://raw.githubusercontent.com/inextensodigital/github/master/install.sh | bash -
+```
+
+or a simplified version (feel free to replace `linux` by either `windows` or `darwin`)
 
 ```shell
 curl -s https://api.github.com/repos/inextensodigital/github/releases/latest |
@@ -53,12 +59,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: echo build app
-      - run: |
-          sudo wget -q -O /usr/local/bin/github $(
-            curl -s https://api.github.com/repos/inextensodigital/github/releases/latest |
-            jq -r '.assets[] | select(.name | test("linux-amd64$")) | .browser_download_url'
-          )
-          sudo chmod +x /usr/local/bin/github
+      - run: curl -qs https://raw.githubusercontent.com/inextensodigital/github/master/install.sh | bash -
       - id: deployment
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -105,12 +106,7 @@ jobs:
       #     jq -r '.assets[] | select(.name | contains("linux-amd64")) | .browser_download_url' |
       #     wget -qi - -O - | sudo tar xzpf - -C / --strip-components=1
       # - uses: actions/checkout@master
-      - run: |
-          sudo wget -q -O /usr/local/bin/github $(
-            curl -s https://api.github.com/repos/inextensodigital/github/releases/latest |
-            jq -r '.assets[] | select(.name | test("linux-amd64$")) | .browser_download_url'
-          )
-          sudo chmod +x /usr/local/bin/github
+      - run: curl -qs https://raw.githubusercontent.com/inextensodigital/github/master/install.sh | bash -
       - id: deployment
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -151,12 +147,7 @@ jobs:
     needs: should-deploy
     runs-on: ubuntu-latest
     steps:
-      - run: |
-          sudo wget -q -O /usr/local/bin/github $(
-            curl -s https://api.github.com/repos/inextensodigital/github/releases/latest |
-            jq -r '.assets[] | select(.name | test("linux-amd64$")) | .browser_download_url'
-          )
-          sudo chmod +x /usr/local/bin/github
+      - run: curl -qs https://raw.githubusercontent.com/inextensodigital/github/master/install.sh | bash -
       - env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ID: ${{ github.event.deployment.id }}

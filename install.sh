@@ -93,7 +93,6 @@ checkGithubInstalledVersion() {
 # downloadFile downloads the latest binary package and also the checksum
 # for that binary.
 downloadFile() {
-  echo $TAG $OS $ARCH
   DOWNLOAD_URL=$(
     curl -s https://api.github.com/repos/inextensodigital/github/releases/tags/$TAG | \
     jq -r '.assets[] | select(.name | test("'$OS'-'$ARCH'$")) | .browser_download_url'
