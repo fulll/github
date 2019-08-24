@@ -1,4 +1,9 @@
-on: push
+on:
+  push:
+    branches:
+    - '*'
+    - '!master'
+    - '!dev'
 
 name: ci
 jobs:
@@ -7,14 +12,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-    - name: set up Go 1.12
+    - name: set up go 1.12
       uses: actions/setup-go@v1
       with:
         go-version: 1.12
       id: go
 
-    - name: Check out code into the Go module directory
+    - name: check out code into the go module directory
       uses: actions/checkout@v1
 
-    - name: Test
+    - name: test
       run: go test -v .
