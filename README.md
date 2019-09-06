@@ -64,7 +64,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          id=$(github deployment create --autoMerge=false --productionEnvironment=false --environment staging $GITHUB_REF)
+          id=$(github deployment create --productionEnvironment=false --environment staging $GITHUB_REF)
           github deployment_status create $id in_progress
           echo "##[set-output name=deployment_id;]$id"
       - env:
@@ -111,7 +111,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          id=$(github deployment create --autoMerge=false $GITHUB_REF)
+          id=$(github deployment create $GITHUB_REF)
           echo "##[set-output name=deployment_id;]$id"
       # #-----------------------------8<----------------------------------------
       # # here: some job(s) to add for example a deploy button/process
