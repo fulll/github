@@ -125,6 +125,9 @@ var deploymentStatusCreateCmd = &cobra.Command{
 		if err != nil {
 			log.Fatal(err)
 		}
+		if len(*deploymentStatusRequest.Environment) == 0 {
+			deploymentStatusRequest.Environment = nil
+		}
 
 		deploymentStatus, _, err := client.Repositories.CreateDeploymentStatus(ctx, owner, repository, deploymentID, &deploymentStatusRequest)
 		if err != nil {
