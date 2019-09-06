@@ -121,7 +121,7 @@ func init() {
 
 	deployment.AddCommand(deploymentCreateCmd)
 	deploymentCreateCmd.PersistentFlags().StringP("task", "t", "deploy", "Specifies a task to execute (e.g., deploy or deploy:migrations).")
-	deploymentCreateCmd.PersistentFlags().BoolP("autoMerge", "a", true, "Attempts to automatically merge the default branch into the requested ref, if it's behind the default branch.")
+	deploymentCreateCmd.PersistentFlags().BoolP("autoMerge", "a", false, "Attempts to automatically merge the default branch into the requested ref, if it's behind the default branch.")
 	deploymentCreateCmd.PersistentFlags().StringSliceP("requiredContexts", "c", []string{}, "The status contexts to verify against commit status checks. If you omit this parameter, GitHub verifies all unique contexts before creating a deployment. To bypass checking entirely, pass an empty array. Defaults to all unique contexts.")
 	deploymentCreateCmd.PersistentFlags().StringP("payload", "p", "", "JSON payload with extra information about the deployment.")
 	deploymentCreateCmd.PersistentFlags().StringP("environment", "e", "production", "Name for the target deployment environment (e.g., production, staging, qa).")
