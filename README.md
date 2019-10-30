@@ -1,5 +1,9 @@
 # An (unofficial) Github command line client
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/inextensodigital/github)](https://goreportcard.com/report/github.com/inextensodigital/github)
+[![Twitter](https://img.shields.io/twitter/follow/inexdigital_fr.svg?style=social)](https://twitter.com/intent/follow?screen_name=inexdigital_fr)
+
+
 This command line client is based on Github API V3.
 
 ## What it does
