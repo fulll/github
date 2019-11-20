@@ -94,12 +94,12 @@ checkGithubInstalledVersion() {
 # for that binary.
 downloadFile() {
   DOWNLOAD_URL=$(
-    curl -s https://api.github.com/repos/inextensodigital/github/releases/tags/$TAG | \
-    jq -r '.assets[] | select(.name | test("'$OS'-'$ARCH'$")) | .browser_download_url'
+    curl -s https://api.github.com/repos/inextensodigital/github/releases/tags/$TAG |
+    jq -r '.assets[] | .browser_download_url' | grep -E "$OS-$ARCH(.exe)?\$"
   )
   CHECKSUM_URL=$(
-    curl -s https://api.github.com/repos/inextensodigital/github/releases/tags/$TAG | \
-    jq -r '.assets[] | select(.name | test("'$OS'-'$ARCH'.sha256$")) | .browser_download_url'
+    curl -s https://api.github.com/repos/inextensodigital/github/releases/tags/$TAG |
+    jq -r '.assets[] | .browser_download_url' | grep -E "$OS-$ARCH(.exe)?\$"
   )
   CHECKSUM_URL="$DOWNLOAD_URL.sha256"
   GH_CLI_TMP_ROOT="$(mktemp -dt github-installer-XXXXXX)"
