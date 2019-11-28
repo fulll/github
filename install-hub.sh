@@ -5,6 +5,11 @@ PROJECT_NAME="hub"
 : ${USE_SUDO:="true"}
 : ${HUB_INSTALL_DIR:="/usr/local"}
 
+CURL_OPTS="-SsL"
+if ! [[ -z "$GITHUB_USER" && -z "$GITHUB_TOKEN" ]] ; then
+  CURL_OPTS="$CURL_OPTS -u $GITHUB_USER:$GITHUB_TOKEN"
+fi
+
 # initArch discovers the architecture for this system.
 initArch() {
   ARCH=$(uname -m)
@@ -41,8 +46,8 @@ verifySupported() {
     exit 1
   fi
 
-  if ! type "curl" > /dev/null && ! type "wget" > /dev/null; then
-    echo "Either curl or wget is required"
+  if ! type "curl" > /dev/null; then
+    echo "Either curl is required"
     exit 1
   fi
 }
@@ -51,18 +56,12 @@ verifySupported() {
 checkDesiredVersion() {
 	if [ "x$DESIRED_VERSION" == "x" ]; then
 		local latest_release_url="https://api.github.com/repos/github/hub/releases/latest"
-		if type "curl" > /dev/null; then
-      TAG=$(curl --silent $latest_release_url | grep "tag_name" | sed -E 's/.*"([^"]+)".*/\1/')
-    elif type "wget" > /dev/null; then
-      TAG=$(wget -O - $latest_release_url | grep "tag_name" | sed -E 's/.*"([^"]+)".*/\1/')
-    fi
-		
+    TAG=$(curl $CURL_OPTS $latest_release_url | grep "tag_name" | sed -E 's/.*"([^"]+)".*/\1/')
 		VERSION=$(echo $TAG | sed 's/v//')
 		echo "Latest version $VERSION"
 	else 
 		TAG="v$DESIRED_VERSION"
 		VERSION="$DESIRED_VERSION"
-
 	fi
 }
 
@@ -87,17 +86,13 @@ checkHubInstalledVersion() {
 # for that binary.
 downloadFile() {
   HUB_DIST="hub-$OS-$ARCH-$TAG.tgz"
-	DOWNLOAD_URL=$(curl -s https://api.github.com/repos/github/hub/releases/tags/$TAG | grep -E "browser_download_url\": \".+$OS-$ARCH.+\.tgz\"" | sed -E 's|.+(https://[^"]+).+|\1|')
+	DOWNLOAD_URL=$(curl $CURL_OPTS https://api.github.com/repos/github/hub/releases/tags/$TAG | grep -E "browser_download_url\": \".+$OS-$ARCH.+\.tgz\"" | sed -E 's|.+(https://[^"]+).+|\1|')
 
   HUB_TMP_ROOT="$(mktemp -dt hub-installer-XXXXXX)"
   HUB_TMP_FILE="$HUB_TMP_ROOT/$HUB_DIST"
   
   echo "Downloading $DOWNLOAD_URL"
-  if type "curl" > /dev/null; then
-    curl -SsL "$DOWNLOAD_URL" -o "$HUB_TMP_FILE"
-  elif type "wget" > /dev/null; then
-    wget -q -O "$HUB_TMP_FILE" "$DOWNLOAD_URL"
-  fi
+  curl $CURL_OPTS "$DOWNLOAD_URL" -o "$HUB_TMP_FILE"
 }
 
 # runs the given command as root (detects if we are root already)
