@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
-
 PROJECT_NAME="github"
 
 : ${USE_SUDO:="true"}
 : ${GH_CLI_INSTALL_DIR:="/usr/local/bin"}
+
+CURL_OPTS="-SsL"
+if ! [[ -z "$GITHUB_USER" && -z "$GITHUB_TOKEN" ]] ; then
+  CURL_OPTS="$CURL_OPTS -u $GITHUB_USER:$GITHUB_TOKEN"
+fi
 
 # initArch discovers the architecture for this system.
 initArch() {
@@ -67,7 +71,7 @@ checkDesiredVersion() {
   if [ "x$DESIRED_VERSION" == "x" ]; then
     # Get tag from release URL
     local latest_release_url="https://github.com/inextensodigital/github/releases/latest"
-    TAG=$(curl -Ls -o /dev/null -w %{url_effective} $latest_release_url | grep -oE "[^/]+$" )
+    TAG=$(curl $CURL_OPTS -o /dev/null -w %{url_effective} $latest_release_url | grep -oE "[^/]+$" )
   else
     TAG=$DESIRED_VERSION
   fi
@@ -94,11 +98,11 @@ checkGithubInstalledVersion() {
 # for that binary.
 downloadFile() {
   DOWNLOAD_URL=$(
-    curl -s https://api.github.com/repos/inextensodigital/github/releases/tags/$TAG |
+    curl $CURL_OPTS https://api.github.com/repos/inextensodigital/github/releases/tags/$TAG |
     jq -r '.assets[] | .browser_download_url' | grep -E "$OS-$ARCH(.exe)?\$"
   )
   CHECKSUM_URL=$(
-    curl -s https://api.github.com/repos/inextensodigital/github/releases/tags/$TAG |
+    curl $CURL_OPTS https://api.github.com/repos/inextensodigital/github/releases/tags/$TAG |
     jq -r '.assets[] | .browser_download_url' | grep -E "$OS-$ARCH(.exe)?\$"
   )
   CHECKSUM_URL="$DOWNLOAD_URL.sha256"
@@ -106,8 +110,8 @@ downloadFile() {
   GH_CLI_TMP_FILE="$GH_CLI_TMP_ROOT/$PROJECT_NAME"
   GH_CLI_SUM_FILE="$GH_CLI_TMP_ROOT/$PROJECT_NAME.sha256"
   echo "Downloading $DOWNLOAD_URL"
-  curl -SsL "$CHECKSUM_URL" -o "$GH_CLI_SUM_FILE"
-  curl -SsL "$DOWNLOAD_URL" -o "$GH_CLI_TMP_FILE"
+  curl $CURL_OPTS "$CHECKSUM_URL" -o "$GH_CLI_SUM_FILE"
+  curl $CURL_OPTS "$DOWNLOAD_URL" -o "$GH_CLI_TMP_FILE"
 }
 
 # installFile verifies the SHA256 for the file, then unpacks and
