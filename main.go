@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/inextensodigital/github/cmd"
+	"github.com/fulll/github/cmd"
 )
 
 func main() {

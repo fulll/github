@@ -1,7 +1,6 @@
 # An (unofficial) Github command line client
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/inextensodigital/github)](https://goreportcard.com/report/github.com/inextensodigital/github)
-[![Twitter](https://img.shields.io/twitter/follow/inexdigital_fr.svg?style=social)](https://twitter.com/intent/follow?screen_name=inexdigital_fr)
+[![Go Report Card](https://goreportcard.com/badge/github.com/fulll/github)](https://goreportcard.com/report/github.com/fulll/github)
 
 
 This command line client is based on Github API V3.
@@ -25,19 +24,19 @@ are already great at doing that.
 ## How to install it?
 
 ```shell
-go get github.com/inextensodigital/github
+go get github.com/fulll/github
 ```
 
 or you can use the install script:
 
 ```shell
-curl -qs https://raw.githubusercontent.com/inextensodigital/github/master/install.sh | bash -
+curl -qs https://raw.githubusercontent.com/fulll/github/master/install.sh | bash -
 ```
 
 or a simplified version (feel free to replace `linux` by either `windows` or `darwin`)
 
 ```shell
-curl -s https://api.github.com/repos/inextensodigital/github/releases/latest |
+curl -s https://api.github.com/repos/fulll/github/releases/latest |
 jq -r '.assets[] | select(.name | test("linux-amd64$")) | .browser_download_url' |
 wget -qi - -O github && chmod +x github
 ```
@@ -63,7 +62,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: echo build app
-      - run: curl -qs https://raw.githubusercontent.com/inextensodigital/github/master/install.sh | bash -
+      - run: curl -qs https://raw.githubusercontent.com/fulll/github/master/install.sh | bash -
       - id: deployment
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -110,7 +109,7 @@ jobs:
       #     jq -r '.assets[] | select(.name | contains("linux-amd64")) | .browser_download_url' |
       #     wget -qi - -O - | sudo tar xzpf - -C / --strip-components=1
       # - uses: actions/checkout@master
-      - run: curl -qs https://raw.githubusercontent.com/inextensodigital/github/master/install.sh | bash -
+      - run: curl -qs https://raw.githubusercontent.com/fulll/github/master/install.sh | bash -
       - id: deployment
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -151,7 +150,7 @@ jobs:
     needs: should-deploy
     runs-on: ubuntu-latest
     steps:
-      - run: curl -qs https://raw.githubusercontent.com/inextensodigital/github/master/install.sh | bash -
+      - run: curl -qs https://raw.githubusercontent.com/fulll/github/master/install.sh | bash -
       - env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ID: ${{ github.event.deployment.id }}

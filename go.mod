@@ -1,4 +1,4 @@
-module github.com/inextensodigital/github
+module github.com/fulll/github
 
 go 1.12
 

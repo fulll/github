@@ -36,9 +36,9 @@ jobs:
         export BUILD_DATE=$(date "+%Y-%m-%d")
         export BUILD_COMMIT_HASH=$(git rev-parse --short HEAD 2> /dev/null)
         export GO_BUILD_LDFLAGS="${GO_BUILD_LDFLAGS}
-          -X github.com/inextensodigital/github/cmd.version=${TAG_NAME}
-          -X github.com/inextensodigital/github/cmd.buildDate=${BUILD_DATE}
-          -X github.com/inextensodigital/github/cmd.commitHash=${BUILD_COMMIT_HASH}
+          -X github.com/fulll/github/cmd.version=${TAG_NAME}
+          -X github.com/fulll/github/cmd.buildDate=${BUILD_DATE}
+          -X github.com/fulll/github/cmd.commitHash=${BUILD_COMMIT_HASH}
         "
 
         export GOOS=linux
