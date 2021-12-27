@@ -51,7 +51,7 @@ verifySupported() {
   local supported="darwin-amd64\nlinux-amd64\nwindows-amd64"
   if ! echo "${supported}" | grep -q "${OS}-${ARCH}"; then
     echo "No prebuilt binary for ${OS}-${ARCH}."
-    echo "To build from source, go to https://github.com/inextensodigital/github"
+    echo "To build from source, go to https://github.com/fulll/github"
     exit 1
   fi
 
@@ -70,7 +70,7 @@ verifySupported() {
 checkDesiredVersion() {
   if [ "x$DESIRED_VERSION" == "x" ]; then
     # Get tag from release URL
-    local latest_release_url="https://github.com/inextensodigital/github/releases/latest"
+    local latest_release_url="https://github.com/fulll/github/releases/latest"
     TAG=$(curl $CURL_OPTS -o /dev/null -w %{url_effective} $latest_release_url | grep -oE "[^/]+$" )
   else
     TAG=$DESIRED_VERSION
@@ -98,11 +98,11 @@ checkGithubInstalledVersion() {
 # for that binary.
 downloadFile() {
   DOWNLOAD_URL=$(
-    curl $CURL_OPTS https://api.github.com/repos/inextensodigital/github/releases/tags/$TAG |
+    curl $CURL_OPTS https://api.github.com/repos/fulll/github/releases/tags/$TAG |
     jq -r '.assets[] | .browser_download_url' | grep -E "$OS-$ARCH(.exe)?\$"
   )
   CHECKSUM_URL=$(
-    curl $CURL_OPTS https://api.github.com/repos/inextensodigital/github/releases/tags/$TAG |
+    curl $CURL_OPTS https://api.github.com/repos/fulll/github/releases/tags/$TAG |
     jq -r '.assets[] | .browser_download_url' | grep -E "$OS-$ARCH(.exe)?\$"
   )
   CHECKSUM_URL="$DOWNLOAD_URL.sha256"
@@ -141,7 +141,7 @@ fail_trap() {
     else
       echo "Failed to install $PROJECT_NAME"
     fi
-    echo -e "\tFor support, go to https://github.com/inextensodigital/github."
+    echo -e "\tFor support, go to https://github.com/fulll/github."
   fi
 # cleanup
   exit $result
@@ -167,7 +167,7 @@ help () {
   echo -e "\t[--no-sudo]  ->> install without sudo"
 }
 
-# cleanup temporary files to avoid https://github.com/inextensodigital/github/issues/2977
+# cleanup temporary files to avoid https://github.com/fulll/github/issues/2977
 cleanup() {
   if [[ -d "${GH_CLI_TMP_ROOT:-}" ]]; then
     rm -rf "$GH_CLI_TMP_ROOT"
