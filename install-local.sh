@@ -88,7 +88,7 @@ checkGithubInstalledVersion() {
 installFile() {
   echo "Preparing to install $PROJECT_NAME from ${GH_CLI_TMP} ${GH_CLI_INSTALL_DIR}"
   chmod +x "${GH_CLI_TMP}"
-  runAsRoot cp "${GH_CLI_TMP}" "$GH_CLI_INSTALL_DIR"
+  runAsRoot cp "${GH_CLI_TMP}" "$GH_CLI_INSTALL_DIR/$PROJECT_NAME"
   ls $GH_CLI_INSTALL_DIR
   echo "$PROJECT_NAME installed into $GH_CLI_INSTALL_DIR/$PROJECT_NAME"
 }
