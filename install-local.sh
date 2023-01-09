@@ -132,7 +132,7 @@ cleanup() {
 # Execution
 
 #Stop execution on any error
-trap "fail_trap" EXIT
+# trap "fail_trap" EXIT
 set -e
 
 # Parsing input arguments (if any)
