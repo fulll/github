@@ -38,7 +38,7 @@ initCLIPath() {
     suffix=".exe"
   fi  
 
-  GH_CLI_TMP="libs/${OS}-${ARCH}/github-${OS}-${ARCH}${suffix}"
+  GH_CLI_TMP="libs/${OS}-${ARCH}/github${suffix}"
   echo "Init CLI Path for ${OS}-${ARCH} (${GH_CLI_TMP})"
 }
 
