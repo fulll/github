@@ -38,7 +38,7 @@ initCLIPath() {
     suffix=".exe"
   fi  
 
-  GH_CLI_TMP="libs/${OS}-${ARCH}/github-${OS}-${ARCH}${suffix}"
+  GH_CLI_TMP="libs/${OS}-${ARCH}/github${suffix}"
   echo "Init CLI Path for ${OS}-${ARCH} (${GH_CLI_TMP})"
 }
 
@@ -86,9 +86,9 @@ checkGithubInstalledVersion() {
 # installFile verifies the SHA256 for the file, then unpacks and
 # installs it.
 installFile() {
-  echo "Preparing to install $PROJECT_NAME into ${GH_CLI_INSTALL_DIR}"
+  echo "Preparing to install $PROJECT_NAME from ${GH_CLI_TMP} ${GH_CLI_INSTALL_DIR}"
   chmod +x "${GH_CLI_TMP}"
-  runAsRoot cp "${GH_CLI_TMP}" "$GH_CLI_INSTALL_DIR"
+  runAsRoot cp "${GH_CLI_TMP}" "$GH_CLI_INSTALL_DIR/$PROJECT_NAME"
   echo "$PROJECT_NAME installed into $GH_CLI_INSTALL_DIR/$PROJECT_NAME"
 }
 
