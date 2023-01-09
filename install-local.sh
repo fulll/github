@@ -32,8 +32,14 @@ initOS() {
 
 # initOS discovers the operating system for this system.
 initCLIPath() {
-  suffix=$([ "${OS}" = "windows" ] && echo ".exe")
-  GH_CLI_TMP="libs/${OS}-${ARCH}/github-${OS}-${arch}${suffix}"
+  suffix=""
+
+  if [ "${OS}" = "windows" ]; then
+    suffix=".exe"
+  fi  
+
+  GH_CLI_TMP="libs/${OS}-${ARCH}/github-${OS}-${ARCH}${suffix}"
+  echo "Init CLI Path for ${OS}-${ARCH} (${GH_CLI_TMP})"
 }
 
 # runs the given command as root (detects if we are root already)
@@ -50,7 +56,7 @@ runAsRoot() {
 # verifySupported checks that the os/arch combination is supported for
 # binary builds.
 verifySupported() {
-  
+  echo "check support ${GH_CLI_TMP}"
   if [ ! -f "${GH_CLI_TMP}" ]; then
     echo "No prebuilt binary for ${OS}-${ARCH}."
     echo "To build from source, go to https://github.com/fulll/github"
